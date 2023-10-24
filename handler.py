@@ -3,7 +3,8 @@ import json
 import os
 import tkinter as tk
 from tkinter import Checkbutton, IntVar, filedialog, messagebox, ttk
-from tkinter.ttk import Style
+from ttkbootstrap import Style
+from tkinter import ttk
 
 import cv2
 from PIL import Image, ImageTk
@@ -60,12 +61,14 @@ class HandlerGUI(object):
         self.ds = Dataset(source="", name="iam")
         self.RESULTS_PATH = "results/"
         self.master = master
+
+        self.style = Style(theme="litera")
         # Init of the master view
-        self.master.title("Handwritten flowchart with CNNs")
-        self.master.configure(background="gray99")
+        self.master.title("框图识别与代码生成")
+        # self.master.configure(background="gray99")
         self.master.resizable(False,False)
         self.master.geometry("600x500")
-        self.master.config(bg="#857074")
+        # self.master.config(bg="#857074")
         # Predict
         self.selected_image = ""
         self.models_path = "model/training_results/"
@@ -73,21 +76,21 @@ class HandlerGUI(object):
         self.env_name = env_name
         # Header
         self.header = tk.Frame(self.master)
-        self.header.config(width="1000",height="100",bg="#943340")
+        self.header.config(width="1000",height="100")
         self.header.pack(fill="y")
         self.header.pack_propagate(False)
-        self.title = tk.Label(self.header,text="3b-flowchart",font=("Arial",50),bg="#943340")
+        self.title = tk.Label(self.header,text="3b-flowchart",font=("Arial",50))
         self.title.pack(pady = 20)
-        style = Style()
-        style.map('TButton', foreground = [('active', 'green')],background = [('active', 'black')])
+        
+        # style.map('TButton', foreground = [('active', 'green')],background = [('active', 'black')])
         # Buttons
-        btn1 = tk.Button(self.master, height=4,font=("Arial",15), width=25, text="Train shape model",command = self.train_window)
+        btn1 = tk.Button(self.master, height=4,font=("Arial",15), width=25, text="训练形状模型",command = self.train_window)
         btn1.pack(pady=10)
 
-        btn2 = tk.Button(self.master, height=4, font=("Arial",15), width=25, text="Recognize flowchart", command = self.recognize_flowchart_window)
+        btn2 = tk.Button(self.master, height=4, font=("Arial",15), width=25, text="识别流程图", command = self.recognize_flowchart_window)
         btn2.pack(pady=10)
 
-        btn3 = tk.Button(self.master,height = 4,font = ("Arial",15), width = 25,text = "Train text model",command = self.__train_text_model)
+        btn3 = tk.Button(self.master,height = 4,font = ("Arial",15), width = 25,text = "训练文本模型",command = self.__train_text_model)
         btn3.pack(pady = 10)
         self.master.mainloop()
 
@@ -125,46 +128,46 @@ class HandlerGUI(object):
         """Train model window."""
         window = tk.Toplevel(self.master)
         window.pack_propagate(False)
-        window.title("Train shape model")
-        window.config(width="700", height="600",bg="#943340")
-        title = tk.Label(window,font = ("Arial",50),text="Train shape model",bg="#943340")
+        window.title("训练形状模型")
+        window.config(width="700", height="600")
+        title = tk.Label(window,font = ("Arial",50),text="训练形状模型")
         title.pack()
         large_font = ('Arial',15)
         text_font = ('Arial',12)
         mini_text_font = ('Arial',7)
         inputs = tk.Frame(window)
-        inputs.config(bg="#943340")
+        # inputs.config(bg="#943340")
         inputs.pack(side = tk.LEFT)
 
         # Select folder path of dataset
         text = tk.StringVar()
-        dataset_path_text = tk.Label(inputs,height=3, width=50,bg="#943340",font=mini_text_font, textvariable=text)
+        dataset_path_text = tk.Label(inputs,height=3, width=50,font=mini_text_font, textvariable=text)
         dataset_path_text.grid(row=0, column=1)
         dataset_path_button = tk.Button(inputs,text="* Select dataset",font=("Arial",9),width=10,command=lambda : self.__select_dataset_path(text)).grid(row=0,column=0)
 
         # Pre-trained-model-path
         text_2 = tk.StringVar()
-        pretrained_model_path_text = tk.Label(inputs,height=3, width=50,bg="#943340",font=mini_text_font, textvariable=text_2)
+        pretrained_model_path_text = tk.Label(inputs,height=3, width=50,font=mini_text_font, textvariable=text_2)
         pretrained_model_path_text.grid(row=1, column=1)
         pretrained_model_path_button = tk.Button(inputs,text="Select trained model",font=("Arial",9),width=14,command=lambda : self.__select_pretrained_model_path(text_2)).grid(row=1,column=0)
 
         # Number of Regions of Interest (RoIs)
-        num_rois_text = tk.Label(inputs,text="# RoIs",height=3, width=15,bg="#943340",font=text_font).grid(row=2)
+        num_rois_text = tk.Label(inputs,text="# RoIs",height=3, width=15,font=text_font).grid(row=2)
         num_rois_input = tk.Entry(inputs,font=large_font)
         num_rois_input.grid(row=2, column=1)
 
         # Number of epochs
-        num_epochs_text = tk.Label(inputs,text="* Epochs",height=3, width=15,bg="#943340",font=text_font).grid(row=3)
+        num_epochs_text = tk.Label(inputs,text="* Epochs",height=3, width=15,font=text_font).grid(row=3)
         num_epochs_input = tk.Entry(inputs,font=large_font)
         num_epochs_input.grid(row=3, column=1)
 
         # Learning rate
-        learning_rate_text = tk.Label(inputs,text="* learning rate",height=3, width=15,bg="#943340",font=text_font).grid(row=4)
+        learning_rate_text = tk.Label(inputs,text="* learning rate",height=3, width=15,font=text_font).grid(row=4)
         learning_rate_input = tk.Entry(inputs,font=large_font)
         learning_rate_input.grid(row=4, column=1)
 
         # Check - use_gpu
-        use_gpu_text = tk.Label(inputs,text="Use GPU",height=3, width=15,bg="#943340",font=text_font).grid(row=5)
+        use_gpu_text = tk.Label(inputs,text="Use GPU",height=3, width=15,font=text_font).grid(row=5)
         use_gpu_val = IntVar()
         use_gpu_check = Checkbutton(inputs, variable=use_gpu_val)
         use_gpu_check.grid(row=5, column=1)
@@ -191,14 +194,14 @@ class HandlerGUI(object):
 
     def __select_pretrained_model_path(self, label):
         aux = filedialog.askopenfilename(
-            title = "Select file",
+            title = "选择文件",
             filetypes = (("hdf5 files","*.hdf5"), ("h5 files","*.h5"))
         )
         label.set(aux)
 
     def __select_image(self):
         self.selected_image = filedialog.askopenfilename(
-            title="Select image",
+            title="选择图片",
             filetypes=(
                 ("all files","*.*"),
                 ("jpeg files",("*.jpg, *.jpeg")),
@@ -365,33 +368,33 @@ class HandlerGUI(object):
         """ Recognize flowchart window."""
         window = tk.Toplevel(self.master)
         header = tk.Frame(window)
-        header.config(width="400",height="50",bg="#857074")
+        header.config(width="400",height="50")
         header.pack(fill="y")
         header.pack_propagate(False)
-        title = tk.Label(header,text="Recognize flowchart",font=("Arial",20),bg="#857074")
+        title = tk.Label(header,text="流程图识别",font=("Arial",20))
         title.pack(pady = 5)
         window.pack_propagate(False)
-        window.config(width="400", height="470",bg="#943340")
+        window.config(width="400", height="470")
 
         # Diferent models to select
         model_folder_list = os.listdir(self.models_path)
-        model_folder_list.append("Select a folder of training results")
+        model_folder_list.append("选择训练结果文件夹")
         model_folder_list.reverse()
         combobox_model_folder = ttk.Combobox(window,values = model_folder_list, width =27,font=("Arial",13))
         combobox_model_folder.pack(pady=40)
         combobox_model_folder.current(0)
 
         # Button for select image
-        button_image = tk.Button(window,text="Select image",width=18,height=2,font=("Arial",12), command=self.__select_image)
+        button_image = tk.Button(window,text="选择图片",width=18,height=2,font=("Arial",12), command=self.__select_image)
         button_image.pack(pady=10)
 
         # Use GPU
         use_gpu_val = IntVar()
-        use_gpu_check = Checkbutton(window, text="Use GPU", variable=use_gpu_val,width=20,height=2,background="#943340")
+        use_gpu_check = Checkbutton(window, text="使用GPU", variable=use_gpu_val,width=20,height=2)
         use_gpu_check.pack(pady=10)
 
         # Number of RoIs
-        num_rois_lbl = tk.Label(window,text="Optional, default: 32",height=2, width=20,bg="#943340",font=("Arial",10))
+        num_rois_lbl = tk.Label(window,text="Optional, default: 32",height=2, width=20,font=("Arial",10))
         num_rois_lbl.pack()
         num_rois_input = tk.Entry(window,font=("Arial",12), width=20)
         num_rois_input.insert(0, 'Type number of RoIs')
@@ -457,13 +460,13 @@ class HandlerGUI(object):
             node.set_text(text)
         window = tk.Toplevel(self.master)
         header = tk.Frame(window)
-        header.config(width="400",height="50",bg="#857074")
+        header.config(width="400",height="50")
         header.pack(fill="y")
         header.pack_propagate(False)
-        title = tk.Label(header,text="",font=("Arial",20),bg="#857074")
+        title = tk.Label(header,text="",font=("Arial",20))
         title.pack(pady = 5)
         window.pack_propagate(False)
-        window.config(width="400", height="200",bg="#943340")
+        window.config(width="400", height="200")
         train_now = tk.Button(window,text="Train text model now",font=("Arial",15),
         background="green",command = lambda:self.__train_now(images,new_texts,text_nodes,shape_nodes,image_path,window))
         train_now.pack(pady = 10)
@@ -477,15 +480,15 @@ class HandlerGUI(object):
         text_nodes = list(text_nodes)
         window = tk.Toplevel(self.master)
         header = tk.Frame(window)
-        header.config(width="400",height="50",bg="#857074")
+        header.config(width="400",height="50")
         header.pack(fill="y")
         header.pack_propagate(False)
-        title = tk.Label(header,text="Edit text",font=("Arial",20),bg="#857074")
+        title = tk.Label(header,text="Edit text",font=("Arial",20))
         title.pack(pady = 5)
-        message = tk.Label(window,text="If text prediction are not aceptable please edit it",font=("Arial",12),bg="#857074")
+        message = tk.Label(window,text="If text prediction are not aceptable please edit it",font=("Arial",12))
         message.pack(pady = 5)
         window.pack_propagate(False)
-        window.config(width="400", height="600",bg="#943340")
+        window.config(width="400", height="600")
         entrys = []
         aux = [x[0] for x in text_nodes]
         imgs = [x[1] for x in text_nodes]
@@ -493,7 +496,7 @@ class HandlerGUI(object):
         continue_btn.pack()
         display = tk.Frame(window)
         display.pack(fill="x",pady=10,side=tk.LEFT,anchor=tk.N)
-        display.config(bg="#454545",width="700",height="400")
+        display.config(width="700",height="400")
         scframe = VerticalScrolledFrame(display)
         scframe.pack()
         for node in text_nodes:
@@ -540,17 +543,17 @@ class HandlerGUI(object):
     def show_results(self,results_path):
         window = tk.Toplevel(self.master)
         header = tk.Frame(window)
-        header.config(width="820",height="80",bg="#857074")
+        header.config(width="820",height="80")
         header.pack(fill="y")
         header.pack_propagate(False)
-        title = tk.Label(header,text="Results",font=("Arial",50),bg="#857074")
+        title = tk.Label(header,text="Results",font=("Arial",50))
         title.pack(pady = 5)
         window.pack_propagate(False)
-        window.config(width="820", height="660",bg="#943340")
-        window.title("Results")
+        window.config(width="820", height="660")
+        window.title("训练结果")
 
         # code visualization
-        code_panel = tk.Text(window,width=30,height=21,font=("Arial",15),bg="#ccc5c3")
+        code_panel = tk.Text(window,width=30,height=21,font=("Arial",15))
         code_panel.pack(side = tk.LEFT,padx = 30)
         code_text = open("results/"+results_path+"code.c",'r')
         count = 0
@@ -575,15 +578,17 @@ class HandlerGUI(object):
         os.system('echo "Compilation done!"')
 
 
-root = tk.Tk()
+if __name__ =="__main__":
 
-# get input args
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--env", type=str, required=False, default="handwritten-flowchart-recog"
-)
-args = parser.parse_args()
+    root = tk.Tk()
 
-conda_env_name = args.env
-print(f"Using Conda env: {conda_env_name}")
-my_gui = HandlerGUI(root, conda_env_name)
+    # get input args
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--env", type=str, required=False, default="handwritten-flowchart-recog"
+    )
+    args = parser.parse_args()
+
+    conda_env_name = args.env
+    print(f"Using Conda env: {conda_env_name}")
+    my_gui = HandlerGUI(root, conda_env_name)
